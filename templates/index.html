@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .main-container {
+            width: 1125px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar-wrapper {
+            width: 1125px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .btn-scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 10px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #e94560 #16213e;
+        }
+
+        .btn-scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .btn-scroll-container::-webkit-scrollbar-track {
+            background: #16213e;
+            border-radius: 3px;
+        }
+
+        .btn-scroll-container::-webkit-scrollbar-thumb {
+            background: #e94560;
+            border-radius: 3px;
+        }
+
+        .btn-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #ff6b81;
+        }
+
+        .btn-list {
+            display: inline-flex;
+            gap: 10px;
+            padding: 0 5px;
+        }
+
+        .game-btn {
+            flex-shrink: 0;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border: 2px solid #e94560;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 140px;
+            text-align: center;
+            user-select: none;
+        }
+
+        .game-btn:hover {
+            background: linear-gradient(135deg, #e94560, #c23152);
+            border-color: #ff6b81;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        .game-btn.active {
+            background: linear-gradient(135deg, #e94560, #c23152);
+            border-color: #ff6b81;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .image-section {
+            width: 1125px;
+            margin-top: 20px;
+            display: flex;
+        }
+
+        .image-scroll-container {
+            width: 100%;
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #e94560 #16213e;
+        }
+
+        .image-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .image-scroll-container::-webkit-scrollbar-track {
+            background: #16213e;
+            border-radius: 4px;
+        }
+
+        .image-scroll-container::-webkit-scrollbar-thumb {
+            background: #e94560;
+            border-radius: 4px;
+        }
+
+        .image-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #ff6b81;
+        }
+
+        .image-display-area {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #e94560;
+            background-color: #16213e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-display-area img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .placeholder-text {
+            color: #888;
+            font-size: 28px;
+            letter-spacing: 4px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+
+        <div class="top-bar-wrapper">
+            <div class="btn-scroll-container">
+                <div class="btn-list" id="btnList">
+                </div>
+            </div>
+        </div>
+
+        <div class="image-section">
+            <div class="image-scroll-container" id="imageScrollContainer">
+                <div class="image-display-area" id="imageArea">
+                    <img id="displayImage" src="/static/images/wang1 (1).png" alt="游戏图片">
+                    <span class="placeholder-text" id="placeholder" style="display: none;">待 定</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const images = [
+            "/static/images/wang1 (1).png",
+            "/static/images/wang1 (2).png",
+            "/static/images/wang1 (3).png",
+            "/static/images/wang1 (4).png",
+            "/static/images/wang1 (5).png",
+            "",
+            "",
+            "",
+            "",
+            "",
+        ];
+
+        const gameNames = [
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+            "游戏名很长很长很长",
+        ];
+
+        const btnList = document.getElementById('btnList');
+        const imageArea = document.getElementById('imageArea');
+        const displayImage = document.getElementById('displayImage');
+        const placeholder = document.getElementById('placeholder');
+
+        let currentIndex = 0;
+
+        gameNames.forEach((name, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'game-btn';
+            btn.textContent = name;
+            btn.addEventListener('click', () => switchGame(index, btn));
+            btnList.appendChild(btn);
+
+            if (index === 0) {
+                btn.classList.add('active');
+                if (images[0]) {
+                    showImage(images[0]);
+                }
+            }
+        });
+
+        const allButtons = document.querySelectorAll('.game-btn');
+
+        function switchGame(index, clickedBtn) {
+            allButtons.forEach(b => b.classList.remove('active'));
+            clickedBtn.classList.add('active');
+            currentIndex = index;
+
+            const imgSrc = images[index];
+
+            if (imgSrc) {
+                showImage(imgSrc);
+            } else {
+                showPlaceholder();
+            }
+        }
+
+        function showImage(src) {
+            displayImage.src = src;
+            displayImage.style.display = 'block';
+            placeholder.style.display = 'none';
+        }
+
+        function showPlaceholder() {
+            displayImage.style.display = 'none';
+            placeholder.style.display = 'inline';
+        }
+    </script>
+
+</body>
+</html>
